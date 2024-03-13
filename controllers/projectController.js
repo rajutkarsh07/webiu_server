@@ -65,6 +65,7 @@ exports.getRepositoryData = catchAsync(async (req, res, next) => {
   try {
     const repositoryName = req.params.name;
 
+    // Fetch repository data
     const repositoryResponse = await axios.get(
       `https://api.github.com/repos/c2siorg/${repositoryName}`,
       {
@@ -80,6 +81,7 @@ exports.getRepositoryData = catchAsync(async (req, res, next) => {
       `https://api.github.com/repos/c2siorg/${repositoryName}/readme`,
       {
         headers: {
+          Accept: 'application/vnd.github.v3.raw',
           Authorization: `token ${accessToken}`,
         },
       }

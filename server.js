@@ -5,21 +5,21 @@ const path = require('path');
 dotenv.config();
 const app = require('./app');
 
-let DB = process.env.DATABASE_HOST.replace(
-  '<password>',
-  process.env.DATABASE_PASSWORD
-);
+// let DB = process.env.DATABASE_HOST.replace(
+//   '<password>',
+//   process.env.DATABASE_PASSWORD
+// );
 
-DB = process.env.DATABASE_LOCAL;
+// DB = process.env.DATABASE_LOCAL;
 
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-  })
-  .then(() => console.log(`Connection sucessfully`));
+// mongoose
+//   .connect(DB, {
+//     useNewUrlParser: true,
+//     useCreateIndex: true,
+//     useUnifiedTopology: true,
+//     useFindAndModify: false,
+//   })
+//   .then(() => console.log(`Connection sucessfully`));
 
 const PORT = process.env.PORT || 5000;
 

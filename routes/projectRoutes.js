@@ -3,9 +3,9 @@ const projectController = require('./../controllers/projectController');
 
 const router = express.Router();
 
-router.get('/projects', projectController.allProject);
-router.get('/allContributor', projectController.allContributor);
-router.get('/:name', projectController.repositoryContributors);
+router.get('/projects', projectController.getAllProjects);
 router.get('/:name', projectController.getRepositoryData);
+router.get('/allContributor', projectController.getAllContributors);
+router.get('/:name', projectController.getRepositoryContributors);
 
 module.exports = router;
