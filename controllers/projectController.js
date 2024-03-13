@@ -3,9 +3,9 @@ const catchAsync = require('../utils/catchAsync');
 
 const accessToken = process.env.GITHUB_ACCESS_TOKEN;
 
-exports.allProject = catchAsync(async (req, res, next) => {
+exports.getAllProjects = catchAsync(async (req, res, next) => {
   try {
-    const reposResponse = await axios.get(
+    const repositoriesResponse = await axios.get(
       `https://api.github.com/orgs/c2siorg/repos`,
       {
         headers: {
@@ -13,21 +13,21 @@ exports.allProject = catchAsync(async (req, res, next) => {
         },
       }
     );
-    const repositories = reposResponse.data;
+    const repositories = repositoriesResponse.data;
 
     res.status(200).json({ repositories });
-  } catch (err) {
+  } catch (error) {
     console.error(
-      'Repositories not found',
-      err.response ? err.response.data : err.message
+      'Error fetching repositories:',
+      error.response ? error.response.data : error.message
     );
-    res.status(500).json({ err: 'Internal server err' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-exports.allContributor = catchAsync(async (req, res, next) => {
+exports.getAllContributors = catchAsync(async (req, res, next) => {
   try {
-    const reposResponse = await axios.get(
+    const repositoriesResponse = await axios.get(
       `https://api.github.com/orgs/c2siorg/repos`,
       {
         headers: {
@@ -35,12 +35,12 @@ exports.allContributor = catchAsync(async (req, res, next) => {
         },
       }
     );
-    const repositories = reposResponse.data;
+    const repositories = repositoriesResponse.data;
     let allContributors = [];
 
-    for (const repo of repositories) {
+    for (const repository of repositories) {
       const contributorsResponse = await axios.get(
-        `https://api.github.com/repos/c2siorg/${repo.name}/contributors`,
+        `https://api.github.com/repos/c2siorg/${repository.name}/contributors`,
         {
           headers: {
             Authorization: `token ${accessToken}`,
@@ -52,16 +52,57 @@ exports.allContributor = catchAsync(async (req, res, next) => {
     }
 
     res.status(200).json({ contributors: allContributors });
-  } catch (err) {
+  } catch (error) {
     console.error(
-      'Err fetching contributors:',
-      err.response ? err.response.data : err.message
+      'Error fetching contributors:',
+      error.response ? error.response.data : error.message
     );
-    res.status(500).json({ err: 'Internal server err' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-exports.repositoryContributors = catchAsync(async (req, res, next) => {
+exports.getRepositoryData = catchAsync(async (req, res, next) => {
+  try {
+    const repositoryName = req.params.name;
+
+    const repositoryResponse = await axios.get(
+      `https://api.github.com/repos/c2siorg/${repositoryName}`,
+      {
+        headers: {
+          Authorization: `token ${accessToken}`,
+        },
+      }
+    );
+    const repository = repositoryResponse.data;
+
+    // Fetch README content
+    const readmeResponse = await axios.get(
+      `https://api.github.com/repos/c2siorg/${repositoryName}/readme`,
+      {
+        headers: {
+          Authorization: `token ${accessToken}`,
+        },
+      }
+    );
+    const readmeContent = readmeResponse.data;
+
+    // Combine repository data and README content
+    const repositoryWithReadme = {
+      ...repository,
+      readme: readmeContent,
+    };
+
+    res.status(200).json({ repository: repositoryWithReadme });
+  } catch (error) {
+    console.error(
+      'Error fetching repository data:',
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+exports.getRepositoryContributors = catchAsync(async (req, res, next) => {
   try {
     const { repositoryName } = req.params;
 
@@ -76,11 +117,11 @@ exports.repositoryContributors = catchAsync(async (req, res, next) => {
     const contributors = contributorsResponse.data;
 
     res.status(200).json({ contributors });
-  } catch (err) {
+  } catch (error) {
     console.error(
       'Error fetching contributors:',
-      err.response ? err.response.data : err.message
+      error.response ? error.response.data : error.message
     );
-    res.status(500).json({ err: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
